@@ -1,12 +1,5 @@
 exec { "apt-update":
-    command => "/usr/bin/apt-get update"
-}
-
-exec { "musicjungle":
-  command => "mysqladmin -uroot create musicjungle",
-  unless => "mysql -u root musicjungle;",
-  path => "/usr/bin",
-  require => Service["mysql-server"]
+  command => "/usr/bin/apt-get update"
 }
 
 package { ["openjdk-7-jre", "tomcat7", "mysql-server"]:
@@ -15,19 +8,11 @@ package { ["openjdk-7-jre", "tomcat7", "mysql-server"]:
 }
 
 service { "tomcat7":
-  ensure => running,
-  enable => true,
-  hasstatus => true,
-  hasrestart => true,
-  require => Package["tomcat7"]    
-}
-
-service { "mysql-server":
-  ensure => running,
-  enable => true,
-  hasstatus => true,
-  hasrestart => true,
-  require => Package["mysql-server"]
+    ensure => running,
+    enable => true,
+    hasstatus => true,
+    hasrestart => true,
+    require => Package["tomcat7"]
 }
 
 file { "/var/lib/tomcat7/webapps/vraptor-musicjungle.war":
@@ -37,4 +22,19 @@ file { "/var/lib/tomcat7/webapps/vraptor-musicjungle.war":
     mode => 0644,
     require => Package["tomcat7"],
     notify => Service["tomcat7"]
+}
+
+service { "mysql":
+  ensure => running,
+  enable => true,
+  hasstatus => true,
+  hasrestart => true,
+  require => Package["mysql-server"]
+}
+
+exec { "musicjungle":
+  command => "mysqladmin -u root create musicjungle",
+  unless => "mysql -u root musicjungle",
+  path => "/usr/bin",
+  require => Service["mysql"]
 }
