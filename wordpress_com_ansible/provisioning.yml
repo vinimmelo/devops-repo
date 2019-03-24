@@ -1,34 +1,10 @@
 ---
-  - hosts: all
-    tasks:
-      - name: 'Instalando os pacotes de dependência do sistema operacional.'
-        apt:
-          name: 
-          - php5
-          - apache2
-          - libapache2-mod-php5
-          - php5-gd
-          - libssh2-php
-          - php5-mcrypt
-          - mysql-server-5.6
-          - python-mysqldb
-          - php5-mysql
-          - gparted
-          state: latest
-        become: yes
+# ansible-playbook -i hosts provisioning.yml
 
-      - name: 'Cria o banco do Mysql'
-        mysql_db:
-         name: wordpress_db
-         login_user: root
-         state: present 
+- hosts: database
+  roles:
+    - mysql
 
-      - name: 'Cria o usuário do MySQL'
-        mysql_user:
-          login_user: root 
-          name: wordpress_user
-          password: 12345
-          priv: 'wordpress_db.*:ALL'
-          state: present
-
-
+- hosts: wordpress
+  roles:
+    - wordpress
