@@ -1,0 +1,27 @@
+- hosts: all
+  handlers:
+    - name: 'restart mysql'
+      service:
+        name: mysql
+        state: restarted
+      become: yes
+
+  tasks:
+    - name: 'Install MySql Server'
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        name: ["mysql-server-5.7", "python3-mysqldb"]
+        state: latest
+      become: yes
+    
+    - name: 'Copy file mysqld.cnf'
+      copy:
+        src: /vagrant/configs/mysqld.cnf
+        dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+        owner: root
+        group: root
+        mode: 0644
+      become: yes
+      notify:
+        - restart mysql
