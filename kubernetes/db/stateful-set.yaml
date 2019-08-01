@@ -1,13 +1,14 @@
 apiVersion: apps/v1beta1
-kind: StatefulSet 
+kind: StatefulSet
 metadata:
   name: statefulset-mysql
 spec:
+  serviceName: db
   template:
     metadata:
       labels:
         name: mysql
-      spec:
+    spec:
       containers:
         - name: container-mysql
           image: mysql:5.7.19
@@ -20,3 +21,11 @@ spec:
               value: "root"
             - name: MYSQL_ALLOW_EMPTY_PASSWORD
               value: "1"
+          volumeMounts:
+            - name: volume-mysql
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: volume-mysql
+          persistentVolumeClaim:
+            claimName: configuracao-mysql
+
